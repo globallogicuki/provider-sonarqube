@@ -1,40 +1,868 @@
-name: hashicorp/null
+name: jdamata/sonarqube
 resources:
-    null_resource:
+    sonarqube_alm_azure:
         subCategory: ""
-        description: The null_resource resource implements the standard resource lifecycle but takes no further action. On Terraform 1.4 and later, use the terraform_data resource type https://developer.hashicorp.com/terraform/language/resources/terraform-data instead. The triggers argument allows specifying an arbitrary set of values that, when changed, will cause the resource to be replaced.
-        name: null_resource
-        title: null_resource Resource - terraform-provider-null
+        description: Provides a Sonarqube Azure Devops Alm/Devops Platform Integration resource. This can be used to create and manage a Alm/Devops Platform Integration for Azure Devops.
+        name: sonarqube_alm_azure
+        title: sonarqube_alm_azure Resource - terraform-provider-sonarqube
         examples:
-            - name: cluster
+            - name: az1
               manifest: |-
                 {
-                  "connection": [
-                    {
-                      "host": "${element(aws_instance.cluster[*].public_ip, 0)}"
-                    }
-                  ],
-                  "provisioner": {
-                    "remote-exec": [
-                      {
-                        "inline": [
-                          "bootstrap-cluster.sh ${join(\" \",\n      aws_instance.cluster[*].private_ip)}"
-                        ]
-                      }
-                    ]
-                  },
-                  "triggers": {
-                    "cluster_instance_ids": "${join(\",\", aws_instance.cluster[*].id)}"
-                  }
+                  "key": "az1",
+                  "personal_access_token": "my_pat",
+                  "url": "https://dev.azure.com/my-org"
                 }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            key: (String) Unique key of the Azure Devops instance setting
+            personal_access_token: (String, Sensitive) Azure Devops personal access token
+            url: (String) Azure API URL
+        importStatements: []
+    sonarqube_alm_github:
+        subCategory: ""
+        description: Provides a Sonarqube GitHub Alm/Devops Platform Integration resource. This can be used to create and manage a Alm/Devops Platform Integration for GitHub.
+        name: sonarqube_alm_github
+        title: sonarqube_alm_github Resource - terraform-provider-sonarqube
+        examples:
+            - name: github-alm
+              manifest: |-
+                {
+                  "app_id": "12345",
+                  "client_id": "56789",
+                  "client_secret": "secret",
+                  "key": "myalm",
+                  "private_key": "myprivate_key",
+                  "url": "https://api.github.com",
+                  "webhook_secret": "mysecret"
+                }
+        argumentDocs:
+            app_id: '(String) GitHub App ID. Maximum length: 80'
+            client_id: '(String) GitHub App Client ID. Maximum length: 80'
+            client_secret: '(String) GitHub App Client Secret. Maximum length: 160'
+            id: (String) The ID of this resource.
+            key: '(String) Unique key of the GitHUb instance setting. Maximum length: 200'
+            private_key: '(String) GitHub App private key. Maximum length: 2500'
+            url: '(String) GitHub API URL. Maximum length: 2000'
+            webhook_secret: '(String) GitHub App Webhook Secret. Maximum length: 160'
+        importStatements: []
+    sonarqube_alm_gitlab:
+        subCategory: ""
+        description: Provides a Sonarqube GitLab Alm/Devops Platform Integration resource. This can be used to create and manage a Alm/Devops Platform Integration for GitLab.
+        name: sonarqube_alm_gitlab
+        title: sonarqube_alm_gitlab Resource - terraform-provider-sonarqube
+        examples:
+            - name: gitlab-alm
+              manifest: |-
+                {
+                  "key": "myalm",
+                  "personal_access_token": "my_personal_access_token",
+                  "url": "https://gitlab.com/api/v4"
+                }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            key: '(String) Unique key of the GitLab instance setting. Maximum length: 200'
+            personal_access_token: '(String, Sensitive) GitLab App personal access token with the read_api scope. See this doc for more information. Maximum length: 2000'
+            url: '(String) GitLab API URL. Maximum length: 2000'
+        importStatements: []
+    sonarqube_azure_binding:
+        subCategory: ""
+        description: Provides a Sonarqube Azure Devops binding resource. This can be used to create and manage the binding between an Azure Devops repository and a SonarQube project
+        name: sonarqube_azure_binding
+        title: sonarqube_azure_binding Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "alm_setting": "${sonarqube_alm_azure.az1.key}",
+                  "project": "${sonarqube_project.main.project}",
+                  "project_name": "my_azure_project",
+                  "repository_name": "my_repo"
+                }
+              references:
+                alm_setting: sonarqube_alm_azure.az1.key
+                project: sonarqube_project.main.project
               dependencies:
-                aws_instance.cluster: |-
+                sonarqube_alm_azure.az1: |-
                     {
-                      "ami": "ami-0dcc1e21636832c5d",
-                      "count": 3,
-                      "instance_type": "m5.large"
+                      "key": "az1",
+                      "personal_access_token": "my_pat",
+                      "url": "https://dev.azure.com/my-org"
+                    }
+                sonarqube_project.main: |-
+                    {
+                      "name": "SonarQube",
+                      "project": "main",
+                      "visibility": "public"
                     }
         argumentDocs:
-            id: (String) This is set to a random value at create time.
-            triggers: (Map of String) A map of arbitrary strings that, when changed, will force the null resource to be replaced, re-running any associated provisioners.
+            alm_setting: (String) Azure DevOps setting key
+            id: (String) The ID of this resource.
+            monorepo: (Boolean) Is this project part of a monorepo
+            project: (String) SonarQube project key
+            project_name: (String) Azure project name
+            repository_name: (String) Azure repository name
+        importStatements: []
+    sonarqube_github_binding:
+        subCategory: ""
+        description: Provides a Sonarqube GitHub binding resource. This can be used to create and manage the binding between a GitHub repository and a SonarQube project
+        name: sonarqube_github_binding
+        title: sonarqube_github_binding Resource - terraform-provider-sonarqube
+        examples:
+            - name: github-binding
+              manifest: |-
+                {
+                  "alm_setting": "${sonarqube_alm_github.github-alm.key}",
+                  "project": "my_project",
+                  "repository": "myorg/myrepo"
+                }
+              references:
+                alm_setting: sonarqube_alm_github.github-alm.key
+              dependencies:
+                sonarqube_alm_github.github-alm: |-
+                    {
+                      "app_id": "12345",
+                      "client_id": "56789",
+                      "client_secret": "secret",
+                      "key": "myalm",
+                      "private_key": "myprivate_key",
+                      "url": "https://api.github.com",
+                      "webhook_secret": "mysecret"
+                    }
+                sonarqube_project.main: |-
+                    {
+                      "name": "SonarQube",
+                      "project": "my_project",
+                      "visibility": "public"
+                    }
+        argumentDocs:
+            alm_setting: (String) GitHub ALM setting key
+            id: (String) The ID of this resource.
+            monorepo: '(String) Is this project part of a monorepo. Default value: false'
+            project: (String) Project key
+            repository: '(String) The full name of your GitHub repository, including the organization, case-sensitive. Maximum length: 256'
+            summary_comment_enabled: '(String) Enable/disable summary in PR discussion tab. Default value: true'
+        importStatements: []
+    sonarqube_gitlab_binding:
+        subCategory: ""
+        description: Provides a Sonarqube GitLab binding resource. This can be used to create and manage the binding between a GitLab repository and a SonarQube project
+        name: sonarqube_gitlab_binding
+        title: sonarqube_gitlab_binding Resource - terraform-provider-sonarqube
+        examples:
+            - name: gitlab-binding
+              manifest: |-
+                {
+                  "alm_setting": "${sonarqube_alm_gitlab.gitlab-alm.key}",
+                  "project": "my_project",
+                  "repository": "123"
+                }
+              references:
+                alm_setting: sonarqube_alm_gitlab.gitlab-alm.key
+              dependencies:
+                sonarqube_alm_gitlab.gitlab-alm: |-
+                    {
+                      "key": "myalm",
+                      "personal_access_token": "my_personal_access_token",
+                      "url": "https://gitlab.com/api/v4"
+                    }
+                sonarqube_project.main: |-
+                    {
+                      "name": "SonarQube",
+                      "project": "my_project",
+                      "visibility": "public"
+                    }
+        argumentDocs:
+            alm_setting: (String) GitLab ALM setting key
+            id: (String) The ID of this resource.
+            monorepo: '(String) Is this project part of a monorepo. Default value: false'
+            project: (String) SonarQube project key. Changing this will force a new resource to be created
+            repository: (String) The GitLab project ID
+        importStatements: []
+    sonarqube_group:
+        subCategory: ""
+        description: Provides a Sonarqube Group resource. This can be used to create and manage Sonarqube Groups.
+        name: sonarqube_group
+        title: sonarqube_group Resource - terraform-provider-sonarqube
+        examples:
+            - name: project_users
+              manifest: |-
+                {
+                  "description": "This is a group",
+                  "name": "Project-Users"
+                }
+        argumentDocs:
+            description: (String) Description of the Group.
+            id: (String) The ID of this resource.
+            name: (String) The name of the Group to create. Changing this forces a new resource to be created.
+        importStatements: []
+    sonarqube_group_member:
+        subCategory: ""
+        description: Provides a Sonarqube Group Member resource. This can be used to add or remove user to or from Sonarqube Groups.
+        name: sonarqube_group_member
+        title: sonarqube_group_member Resource - terraform-provider-sonarqube
+        examples:
+            - name: project_users_member
+              manifest: |-
+                {
+                  "login_name": "${sonarqube_user.user.login_name}",
+                  "name": "${sonarqube_group.project_users.name}"
+                }
+              references:
+                login_name: sonarqube_user.user.login_name
+                name: sonarqube_group.project_users.name
+              dependencies:
+                sonarqube_group.project_users: |-
+                    {
+                      "description": "This is a group",
+                      "name": "Project-Users"
+                    }
+                sonarqube_user.user: |-
+                    {
+                      "login_name": "terraform-test",
+                      "name": "terraform-test",
+                      "password": "secret-sauce37!"
+                    }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            login_name: (String) The login_name of the User to add as a member. Changing this forces a new resource to be created.
+            name: (String) The name of the Group to add a member to. Changing this forces a new resource to be created.
+        importStatements: []
+    sonarqube_new_code_periods:
+        subCategory: ""
+        description: Provides a Sonarqube New Code Periods resource. This can be used to manage Sonarqube New Code Periods.
+        name: sonarqube_new_code_periods
+        title: sonarqube_new_code_periods Resource - terraform-provider-sonarqube
+        examples:
+            - name: code_period
+              manifest: |-
+                {
+                  "type": "NUMBER_OF_DAYS",
+                  "value": "7"
+                }
+            - name: reference
+              manifest: |-
+                {
+                  "project": "${sonarqube_project.reference.project}",
+                  "type": "REFERENCE_BRANCH",
+                  "value": "main"
+                }
+              references:
+                project: sonarqube_project.reference.project
+              dependencies:
+                sonarqube_project.reference: |-
+                    {
+                      "name": "my-project"
+                    }
+        argumentDocs:
+            branch: (String) The name of a branch of a project for which the new code period will be configured. Changing this will force a new resource to be created. Setting this also requires setting the 'project' argument.
+            id: (String) The ID of this resource.
+            project: (String) The key of a project for which the new code period will be configured. Changing this will force a new resource to be created.
+            type: (String) The kind of new code period to use. Supported values are SPECIFIC_ANALYSIS, PREVIOUS_VERSION, NUMBER_OF_DAYS, or REFERENCE_BRANCH.
+            value: (String) The desired value of the new code period. Varies based on the 'type'. For SPECIFIC_ANALYIS, the value must be the UUID of a previous analysis. For NUMBER_OF_DAYS it must be a numeric string. For REFERENCE_BRANCH it should be the name of branch on the project. For PREVIOUS_VERSION it must not be set.
+        importStatements: []
+    sonarqube_permission_template:
+        subCategory: ""
+        description: Provides a Sonarqube Permission template resource. This can be used to create and manage Sonarqube Permission templates.
+        name: sonarqube_permission_template
+        title: sonarqube_permission_template Resource - terraform-provider-sonarqube
+        examples:
+            - name: template
+              manifest: |-
+                {
+                  "description": "These are internal projects",
+                  "name": "Internal-Projects",
+                  "project_key_pattern": "internal.*"
+                }
+        argumentDocs:
+            default: (Boolean) Set the template as the default. This can only be set for one template.
+            description: (String) Description of the Template.
+            id: (String) The ID of this resource.
+            name: (String) The name of the Permission template to create. Do not use names with /. If needed, use replace(var.permission_template_name, "/", "_"). Changing this forces a new resource to be created.
+            project_key_pattern: (String) The project key pattern. Must be a valid Java regular expression.
+        importStatements: []
+    sonarqube_permissions:
+        subCategory: ""
+        description: Provides a Sonarqube Permissions resource. This can be used to manage global and project permissions.
+        name: sonarqube_permissions
+        title: sonarqube_permissions Resource - terraform-provider-sonarqube
+        examples:
+            - name: my_global_admins
+              manifest: |-
+                {
+                  "group_name": "my-admins",
+                  "permissions": [
+                    "admin"
+                  ]
+                }
+            - name: my_project_admins
+              manifest: |-
+                {
+                  "group_name": "my-project-admins",
+                  "permissions": [
+                    "admin"
+                  ],
+                  "project_key": "my-project"
+                }
+            - name: internal_admins
+              manifest: |-
+                {
+                  "group_name": "my-internal-admins",
+                  "permissions": [
+                    "admin"
+                  ],
+                  "template_id": "${sonarqube_permission_template.template.id}"
+                }
+              references:
+                template_id: sonarqube_permission_template.template.id
+            - name: john_project_read
+              manifest: |-
+                {
+                  "login_name": "johndoe",
+                  "permissions": [
+                    "codeviewer",
+                    "user"
+                  ],
+                  "project_key": "my-project"
+                }
+        argumentDocs:
+            group_name: (String) The name of the Group that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with login_name
+            id: (String) The ID of this resource.
+            login_name: (String) The name of the user that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with group_name.
+            permissions: '(List of String) A list of permissions that should be applied. Changing this forces a new resource to be created. Possible values are: admin, codeviewer, issueadmin, securityhotspotadmin, scan, user.'
+            project_key: (String) Specify if you want to apply project level permissions. Changing this forces a new resource to be created. Cannot be used with template_id & template_name
+            template_id: (String) Specify if you want to apply the permissions to a permission template. Changing this forces a new resource to be created. Cannot be used with project_key & template_name
+            template_name: (String) Specify if you want to apply the permissions to a permission template. Changing this forces a new resource to be created. Cannot be used with project_key & template_id
+        importStatements: []
+    sonarqube_plugin:
+        subCategory: ""
+        description: Provides a Sonarqube Plugin resource. This can be used to create and manage Sonarqube Plugins.
+        name: sonarqube_plugin
+        title: sonarqube_plugin Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "key": "cloudformation"
+                }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            key: (String) The key identifying the plugin to uninstall.
+        importStatements: []
+    sonarqube_portfolio:
+        subCategory: ""
+        description: Provides a Sonarqube Portfolio resource. This can be used to create and manage Sonarqube Portfolio. Note that the SonarQube API for Portfolios is called views
+        name: sonarqube_portfolio
+        title: sonarqube_portfolio Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "description": "portfolio-description",
+                  "key": "portfolio-key",
+                  "name": "portfolio-name"
+                }
+        argumentDocs:
+            branch: (String) Which branch to analyze. If nothing, or '' is specified, the main branch is used.
+            description: (String) A description of the Portfolio to create
+            id: (String) The ID of this resource.
+            key: (String) The key of the Portfolio to create
+            name: (String) The name of the Portfolio to create
+            project_key: (String) The project key of the project to add to the portfolio
+            qualifier: (String)
+            regexp: (String) A regular expression that is used to match Projects with a matching name OR key. If they match, they are added to the Portfolio
+            selected_branches: (Set of String) A set of branches for the project to add to the portfolio
+            selected_projects: (Block Set) A set of projects to add to the portfolio. (see below for nested schema)
+            selection_mode: (String) How to populate the Portfolio to create. Possible values are NONE, MANUAL, TAGS, REGEXP or REST. See docs for how Portfolio population works
+            tags: (List of String) List of Project tags to populate the Portfolio from. Only active when selection_mode is TAGS
+            visibility: (String) Whether the created portfolio should be visible to everyone, or only specific user/groups. If no visibility is specified, the default portfolio visibility will be public.
+        importStatements: []
+    sonarqube_project:
+        subCategory: ""
+        description: Provides a Sonarqube Project resource. This can be used to create and manage Sonarqube Project.
+        name: sonarqube_project
+        title: sonarqube_project Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "name": "SonarQube",
+                  "project": "my_project",
+                  "visibility": "public"
+                }
+            - name: main
+              manifest: |-
+                {
+                  "name": "SonarQube",
+                  "project": "my_project",
+                  "setting": [
+                    {
+                      "key": "sonar.demo",
+                      "value": "sonarqube@example.org"
+                    }
+                  ],
+                  "visibility": "public"
+                }
+        argumentDocs:
+            field_values: (List of Map of String) Setting field values for the supplied key
+            id: (String) The ID of this resource.
+            key: (String) Setting key
+            name: (String) The name of the Project to create
+            project: (String) Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
+            setting: (Block List) A list of settings associated to the project (see below for nested schema)
+            tags: (List of String) A list of tags to put on the project.
+            value: (String) Setting a value for the supplied key
+            values: (List of String) Setting multi values for the supplied key
+            visibility: (String) Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are public and private.
+        importStatements: []
+    sonarqube_project_main_branch:
+        subCategory: ""
+        description: Provides a Sonarqube Project main branch resource. This can be used to create and manage a Sonarqube Projects main branch.
+        name: sonarqube_project_main_branch
+        title: sonarqube_project_main_branch Resource - terraform-provider-sonarqube
+        examples:
+            - name: mybranch
+              manifest: |-
+                {
+                  "name": "release",
+                  "project": "my_project"
+                }
+              dependencies:
+                sonarqube_project.main: |-
+                    {
+                      "name": "SonarQube",
+                      "project": "my_project",
+                      "visibility": "public"
+                    }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            name: (String) The name you want the main branch to have.
+            project: (String) Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
+        importStatements: []
+    sonarqube_qualitygate:
+        subCategory: ""
+        description: Provides a Sonarqube Quality Gate resource. This can be used to create and manage Sonarqube Quality Gates and their Conditions.
+        name: sonarqube_qualitygate
+        title: sonarqube_qualitygate Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "condition": [
+                    {
+                      "metric": "new_coverage",
+                      "op": "LT",
+                      "threshold": "50"
+                    },
+                    {
+                      "metric": "vulnerabilities",
+                      "op": "GT",
+                      "threshold": "10"
+                    }
+                  ],
+                  "is_default": true,
+                  "name": "example"
+                }
+        argumentDocs:
+            condition: (Block List) A list of conditions that the gate uses. (see below for nested schema)
+            copy_from: (String) Name of an existing Quality Gate to copy from.
+            id: (String) The ID of this resource.
+            is_default: (Boolean) When set to true this Quality Gate is set as default.
+            metric: (String) Condition metric.
+            name: (String) The name of the Quality Gate to create. Maximum length 100.
+            op: '(String) Condition operator. Possible values are: LT and GT'
+            threshold: '(String) Condition error threshold (For ratings: A=1, B=2, C=3, D=4)'
+        importStatements: []
+    sonarqube_qualitygate_project_association:
+        subCategory: ""
+        description: Provides a Sonarqube Quality Gate Project association resource. This can be used to associate a Quality Gate to a Project
+        name: sonarqube_qualitygate_project_association
+        title: sonarqube_qualitygate_project_association Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "gatename": "${sonarqube_qualitygate.main.id}",
+                  "projectkey": "${sonarqube_project.main.project}"
+                }
+              references:
+                gatename: sonarqube_qualitygate.main.id
+                projectkey: sonarqube_project.main.project
+              dependencies:
+                sonarqube_project.main: |-
+                    {
+                      "name": "SonarQube",
+                      "project": "my_project",
+                      "visibility": "public"
+                    }
+                sonarqube_qualitygate.main: |-
+                    {
+                      "condition": [
+                        {
+                          "metric": "new_coverage",
+                          "op": "LT",
+                          "threshold": "30"
+                        }
+                      ],
+                      "name": "my_qualitygate"
+                    }
+        argumentDocs:
+            gateid: (String)
+            gatename: (String) The name of the Quality Gate
+            id: (String) The ID of this resource.
+            projectkey: (String) Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
+        importStatements: []
+    sonarqube_qualitygate_usergroup_association:
+        subCategory: ""
+        description: Provides a Sonarqube Quality Gate Usergroup association resource. This can be used to associate a Quality Gate to an User or to a Group. The feature is available on SonarQube 9.2 or newer.
+        name: sonarqube_qualitygate_usergroup_association
+        title: sonarqube_qualitygate_usergroup_association Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "gatename": "${sonarqube_qualitygate.main.id}",
+                  "login_name": "${sonarqube_user.qa_user.id}"
+                }
+              references:
+                gatename: sonarqube_qualitygate.main.id
+                login_name: sonarqube_user.qa_user.id
+              dependencies:
+                sonarqube_qualitygate.main: |-
+                    {
+                      "condition": [
+                        {
+                          "metric": "new_coverage",
+                          "op": "LT",
+                          "threshold": "30"
+                        }
+                      ],
+                      "name": "my_qualitygate"
+                    }
+                sonarqube_user.qa_user: |-
+                    {
+                      "login_name": "qa-user",
+                      "name": "qa-user",
+                      "password": "secret-sauce37!"
+                    }
+            - name: main
+              manifest: |-
+                {
+                  "gatename": "${sonarqube_qualitygate.main.id}",
+                  "group_name": "${sonarqube_group.qa_team.name}"
+                }
+              references:
+                gatename: sonarqube_qualitygate.main.id
+                group_name: sonarqube_group.qa_team.name
+              dependencies:
+                sonarqube_group.qa_team: |-
+                    {
+                      "description": "Quality Assurence Team",
+                      "name": "QA-Team"
+                    }
+                sonarqube_qualitygate.main: |-
+                    {
+                      "condition": [
+                        {
+                          "metric": "new_coverage",
+                          "op": "LT",
+                          "threshold": "30"
+                        }
+                      ],
+                      "name": "my_qualitygate"
+                    }
+        argumentDocs:
+            gatename: (String) The name of the Quality Gate
+            group_name: (String) The name of the Group to associate. Either group_name or login_name should be provided.
+            id: (String) The ID of this resource.
+            login_name: (String) The name of the User to associate. Either group_name or login_name should be provided.
+        importStatements: []
+    sonarqube_qualityprofile:
+        subCategory: ""
+        description: Provides a Sonarqube Quality Profile resource. This can be used to create and manage Sonarqube Quality Profiles.
+        name: sonarqube_qualityprofile
+        title: sonarqube_qualityprofile Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "is_default": false,
+                  "language": "js",
+                  "name": "example",
+                  "parent": "sonar way"
+                }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            is_default: (Boolean) When set to true this will make the added Quality Profile default
+            key: (String) ID of the Sonarqube Quality Profile
+            language: (String) Quality profile language. Must be one of "cs", "css", "flex", "go", "java", "js", "jsp", "kotlin", "php", "py", "ruby", "scala", "ts", "vbnet", "web", "xml"
+            name: (String) The name of the Quality Profile to create. Maximum length 100
+            parent: (String) When a parent is provided the quality profile will inherit it's rules
+        importStatements: []
+    sonarqube_qualityprofile_activate_rule:
+        subCategory: ""
+        description: Provides a Sonarqube Rules resource. This can be used to manage Sonarqube rules.
+        name: sonarqube_qualityprofile_activate_rule
+        title: sonarqube_qualityprofile_activate_rule Resource - terraform-provider-sonarqube
+        examples:
+            - name: xml_rule
+              manifest: |-
+                {
+                  "key": "${sonarqube_qualityprofile.xml.key}",
+                  "rule": "${sonarqube_rule.allowed_maven_dependencies.id}",
+                  "severity": "BLOCKER"
+                }
+              references:
+                key: sonarqube_qualityprofile.xml.key
+                rule: sonarqube_rule.allowed_maven_dependencies.id
+              dependencies:
+                sonarqube_qualityprofile.xml: |-
+                    {
+                      "is_default": "false",
+                      "language": "xml",
+                      "name": "test way - xml",
+                      "parent": "Sonar way"
+                    }
+                sonarqube_rule.allowed_maven_dependencies: |-
+                    {
+                      "custom_key": "Only_use_allowed_Maven_dependencies",
+                      "markdown_description": "Description",
+                      "name": "Only use allowed Maven dependencies",
+                      "params": "FilePattern=**/pom.xml",
+                      "severity": "BLOCKER",
+                      "status": "READY",
+                      "template_key": "xml:XPathCheck",
+                      "type": "VULNERABILITY"
+                    }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            key: (String) Quality Profile key. Can be obtained through api/qualityprofiles/search
+            params: (String) Parameters as semi-colon list of =, for example 'params=key1=v1;key2=v2' (Only for custom rule)
+            reset: (String) Reset severity and parameters of activated rule. Set the values defined on parent profile or from rule default values.
+            rule: (String) Rule key
+            severity: (String) Severity. Ignored if parameter reset is true.
+        importStatements: []
+    sonarqube_qualityprofile_project_association:
+        subCategory: ""
+        description: Provides a Sonarqube Quality Profile Project association resource. This can be used to associate a Quality Profile to a Project
+        name: sonarqube_qualityprofile_project_association
+        title: sonarqube_qualityprofile_project_association Resource - terraform-provider-sonarqube
+        examples:
+            - name: main
+              manifest: |-
+                {
+                  "language": "js",
+                  "project": "${sonarqube_project.main.project}",
+                  "quality_profile": "${sonarqube_qualityprofile.main.name}"
+                }
+              references:
+                project: sonarqube_project.main.project
+                quality_profile: sonarqube_qualityprofile.main.name
+              dependencies:
+                sonarqube_project.main: |-
+                    {
+                      "name": "SonarQube",
+                      "project": "my_project",
+                      "visibility": "public"
+                    }
+                sonarqube_qualityprofile.main: |-
+                    {
+                      "language": "js",
+                      "name": "my_quality_profile"
+                    }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            language: (String) Quality profile language. Must be a langauge in this list https://next.sonarqube.com/sonarqube/web_api/api/languages/list
+            project: (String) Name of the project
+            quality_profile: (String) Name of the Quality Profile
+        importStatements: []
+    sonarqube_rule Resource - terraform-provider-sonarqube:
+        subCategory: ""
+        description: Provides a Sonarqube Rules resource. This can be used to manage Sonarqube rules.
+        name: sonarqube_rule Resource - terraform-provider-sonarqube
+        title: sonarqube_rule Resource - terraform-provider-sonarqube
+        argumentDocs:
+            custom_key: '(String) key of the custom rule should only contain : a-z, 0-9, _'
+            id: (String) The ID of this resource.
+            markdown_description: (String) Rule description
+            name: (String) Rule name
+            params: (String) Parameters as semi-colon list of =, for example 'params=key1=v1;key2=v2' (Only for custom rule)
+            prevent_reactivation: (String) If set to true and if the rule has been deactivated (status 'REMOVED'), a status 409 will be returned
+            severity: (String) Rule severity
+            status: (String) Rule status
+            template_key: (String) Key of the template rule in order to create a custom rule (mandatory for custom rule)
+            type: (String) Rule type
+        importStatements: []
+    sonarqube_setting:
+        subCategory: ""
+        description: Provides a Sonarqube Settings resource. This can be used to manage Sonarqube settings.
+        name: sonarqube_setting
+        title: sonarqube_setting Resource - terraform-provider-sonarqube
+        examples:
+            - name: multi_value_setting
+              manifest: |-
+                {
+                  "key": "sonar.global.exclusions",
+                  "values": [
+                    "foo",
+                    "bar/**/*.*"
+                  ]
+                }
+            - name: multi_field_setting
+              manifest: |-
+                {
+                  "field_values": [
+                    {
+                      "resourceKey": "bar",
+                      "ruleKey": "foo"
+                    },
+                    {
+                      "resourceKey": "bar2",
+                      "ruleKey": "foo2"
+                    }
+                  ],
+                  "key": "sonar.issue.ignore.multicriteria"
+                }
+        argumentDocs:
+            field_values: (List of Map of String) Setting field values for the supplied key
+            id: (String) The ID of this resource.
+            key: (String) Setting key
+            value: (String) Setting value. To reset a value, please use the reset web service.
+            values: (List of String) Setting multi values for the supplied key
+        importStatements: []
+    sonarqube_user:
+        subCategory: ""
+        description: Provides a Sonarqube User resource. This can be used to manage Sonarqube Users.
+        name: sonarqube_user
+        title: sonarqube_user Resource - terraform-provider-sonarqube
+        examples:
+            - name: user
+              manifest: |-
+                {
+                  "login_name": "terraform-test",
+                  "name": "terraform-test",
+                  "password": "secret-sauce37!"
+                }
+            - name: remote_user
+              manifest: |-
+                {
+                  "email": "terraform-test@sonarqube.com",
+                  "is_local": false,
+                  "login_name": "terraform-test",
+                  "name": "terraform-test"
+                }
+        argumentDocs:
+            email: (String) The email of the User to create.
+            id: (String) The ID of this resource.
+            is_local: (Boolean) True if the User should be of type local. Defaults to true.
+            login_name: (String) The login name of the User to create. Changing this forces a new resource to be created.
+            name: (String) The name of the User to create. Changing this forces a new resource to be created.
+            password: (String, Sensitive) The password of User to create. This is only used if the user is of type local.
+        importStatements: []
+    sonarqube_user_external_identity:
+        subCategory: ""
+        description: Updates the external identity of a non local Sonarqube User. This can be used to set the Identity Provider which should be used to authenticate a specific user. The Sonarqube API currently does not provide an endpoint to read the external identity setting of an user.
+        name: sonarqube_user_external_identity
+        title: sonarqube_user_external_identity Resource - terraform-provider-sonarqube
+        examples:
+            - name: remote_user
+              manifest: |-
+                {
+                  "external_identity": "terraform-test@sonarqube.com",
+                  "external_provider": "saml",
+                  "login_name": "${sonarqube_user.remote_user.login_name}"
+                }
+              references:
+                login_name: sonarqube_user.remote_user.login_name
+              dependencies:
+                sonarqube_user.remote_user: |-
+                    {
+                      "email": "terraform-test@sonarqube.com",
+                      "is_local": false,
+                      "login_name": "terraform-test",
+                      "name": "terraform-test"
+                    }
+        argumentDocs:
+            external_identity: (String) The identifier of the User used by the Authentication Provider. Changing this forces a new resource to be created.
+            external_provider: (String) The key of the Authentication Provider. The Authentication Provider must be activated on Sonarqube. Changing this forces a new resource to be created.
+            id: (String) The ID of this resource.
+            login_name: (String) The login name of the User to update. Changing this forces a new resource to be created.
+        importStatements: []
+    sonarqube_user_token:
+        subCategory: ""
+        description: Provides a Sonarqube User token resource. This can be used to manage Sonarqube User tokens.
+        name: sonarqube_user_token
+        title: sonarqube_user_token Resource - terraform-provider-sonarqube
+        examples:
+            - name: token
+              manifest: |-
+                {
+                  "login_name": "${sonarqube_user.user.login_name}",
+                  "name": "my-token"
+                }
+              references:
+                login_name: sonarqube_user.user.login_name
+              dependencies:
+                sonarqube_user.user: |-
+                    {
+                      "login_name": "terraform-test",
+                      "name": "terraform-test",
+                      "password": "secret-sauce37!"
+                    }
+            - name: token
+              manifest: |-
+                {
+                  "expiration_date": "2099-01-01",
+                  "name": "my-token",
+                  "type": "GLOBAL_ANALYSIS_TOKEN"
+                }
+            - name: token
+              manifest: |-
+                {
+                  "name": "my-token",
+                  "project_key": "my-project",
+                  "type": "PROJECT_ANALYSIS_TOKEN"
+                }
+        argumentDocs:
+            expiration_date: (String) The expiration date of the token being generated, in ISO 8601 format (YYYY-MM-DD). If not set, default to no expiration.
+            id: (String) The ID of this resource.
+            login_name: (String) The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
+            name: (String) The name of the Token to create. Changing this forces a new resource to be created.
+            project_key: (String) The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
+            token: (String, Sensitive) The token value.
+            type: (String) The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
+        importStatements: []
+    sonarqube_webhook:
+        subCategory: ""
+        description: Provides a Sonarqube Webhook resource. This can be used to manage Sonarqube webhooks.
+        name: sonarqube_webhook
+        title: sonarqube_webhook Resource - terraform-provider-sonarqube
+        examples:
+            - name: webhook
+              manifest: |-
+                {
+                  "name": "terraform-webhook",
+                  "url": "https://my-webhook-destination.example.com"
+                }
+            - name: webhook
+              manifest: |-
+                {
+                  "name": "terraform-webhook",
+                  "project": "${sonarqube_project.project.name}",
+                  "url": "https://my-webhook-destination.example.com"
+                }
+              references:
+                project: sonarqube_project.project.name
+              dependencies:
+                sonarqube_project.project: |-
+                    {
+                      "name": "project",
+                      "project": "project",
+                      "visibility": "public"
+                    }
+        argumentDocs:
+            id: (String) The ID of this resource.
+            name: (String) The name of the webhook to create. This will be displayed in the Sonarqube administration console.
+            project: (String) The key of the project that will own the webhook.
+            secret: (String, Sensitive) The secret to send with the event payload.
+            url: (String) The URL to send event payloads to. This must begin with either https:// or http://.
         importStatements: []

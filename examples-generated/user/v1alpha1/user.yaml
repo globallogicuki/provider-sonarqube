@@ -1,0 +1,16 @@
+apiVersion: user.crossplane.io/v1alpha1
+kind: User
+metadata:
+  annotations:
+    meta.upbound.io/example-id: user/v1alpha1/user
+  labels:
+    testing.upbound.io/example-name: user
+  name: user
+spec:
+  forProvider:
+    loginName: terraform-test
+    name: terraform-test
+    passwordSecretRef:
+      key: example-key
+      name: example-secret
+      namespace: upbound-system
