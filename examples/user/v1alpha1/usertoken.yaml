@@ -1,3 +1,14 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: password-secret
+  namespace: crossplane-system
+type: Opaque
+stringData:
+  password: ExamplePassword1!
+
+---
+
 apiVersion: user.crossplane.io/v1alpha1
 kind: UserToken
 metadata:
@@ -28,6 +39,6 @@ spec:
     loginName: terraform-test
     name: terraform-test
     passwordSecretRef:
-      key: example-key
-      name: example-secret
-      namespace: upbound-system
+      key: password
+      name: password-secret
+      namespace: crossplane-system

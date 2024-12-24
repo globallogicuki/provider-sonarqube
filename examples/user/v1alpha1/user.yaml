@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: password-secret
+  namespace: crossplane-system
+type: Opaque
+stringData:
+  password: ExamplePassword1!
+---
+apiVersion: user.crossplane.io/v1alpha1
+kind: User
+metadata:
+  annotations:
+    meta.upbound.io/example-id: user/v1alpha1/user
+  labels:
+    testing.upbound.io/example-name: user
+  name: user
+spec:
+  forProvider:
+    loginName: exampleUser 
+    name: exampleUser
+    passwordSecretRef:
+      key: password
+      name: password-secret
+      namespace: crossplane-system
