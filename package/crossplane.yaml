@@ -2,3 +2,19 @@ apiVersion: meta.pkg.crossplane.io/v1
 kind: Provider
 metadata:
   name: provider-sonarqube
+  annotations:
+    meta.crossplane.io/maintainer: GlobalLogic UK&I
+    meta.crossplane.io/source: github.com/globallogicuki/provider-sonarqube
+    meta.crossplane.io/license: Apache-2.0
+    meta.crossplane.io/description: |
+      The SonarQube Crossplane provider adds support for 
+      managing Harbor resources in kubernetes.
+
+    meta.crossplane.io/readme: |
+      `provider-sonarqube` is a crossplane infrastructure provider for 
+      [SonarQube](https://www.sonarsource.com/products/sonarqube/). 
+
+      It is based on the []Terraform SonarQube provider by jadmata](https://github.com/jdamata/terraform-provider-sonarqube). Read the 
+      [readme](https://github.com/globallogicuki/provider-sonarqube/blob/main/README.md) and examples in the repository
+      for instructions on usage.
+
