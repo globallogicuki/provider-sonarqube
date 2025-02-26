@@ -1,4 +1,4 @@
-apiVersion: settings.crossplane.io/v1alpha1
+apiVersion: settings.sonarqube.crossplane.io/v1alpha1
 kind: Setting
 metadata:
   annotations:

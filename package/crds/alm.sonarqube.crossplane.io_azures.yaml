@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: usertokens.user.crossplane.io
+  name: azures.alm.sonarqube.crossplane.io
 spec:
-  group: user.crossplane.io
+  group: alm.sonarqube.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - sonarqube
-    kind: UserToken
-    listKind: UserTokenList
-    plural: usertokens
-    singular: usertoken
+    kind: Azure
+    listKind: AzureList
+    plural: azures
+    singular: azure
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,8 +34,9 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: UserToken is the Schema for the UserTokens API. Provides a Sonarqube
-          User token resource. This can be used to manage Sonarqube User tokens.
+        description: Azure is the Schema for the Azures API. Provides a Sonarqube
+          Azure Devops Alm/Devops Platform Integration resource. This can be used
+          to create and manage a Alm/Devops Platform Integration for Azure Devops.
         properties:
           apiVersion:
             description: |-
@@ -55,7 +56,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: UserTokenSpec defines the desired state of UserToken
+            description: AzureSpec defines the desired state of Azure
             properties:
               deletionPolicy:
                 default: Delete
@@ -73,104 +74,34 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  expirationDate:
+                  key:
                     description: |-
-                      MM-DD). If not set, default to no expiration.
-                      The expiration date of the token being generated, in ISO 8601 format (YYYY-MM-DD). If not set, default to no expiration.
+                      (String) Unique key of the Azure Devops instance setting
+                      Unique key of the Azure Devops instance setting
                     type: string
-                  loginName:
+                  personalAccessTokenSecretRef:
                     description: |-
-                      (String) The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
-                      The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
-                    type: string
-                  loginNameRef:
-                    description: Reference to a User in user to populate loginName.
+                      (String, Sensitive) Azure Devops personal access token
+                      Azure Devops personal access token
                     properties:
-                      name:
-                        description: Name of the referenced object.
+                      key:
+                        description: The key to select.
                         type: string
-                      policy:
-                        description: Policies for referencing.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
                     required:
+                    - key
                     - name
+                    - namespace
                     type: object
-                  loginNameSelector:
-                    description: Selector for a User in user to populate loginName.
-                    properties:
-                      matchControllerRef:
-                        description: |-
-                          MatchControllerRef ensures an object with the same controller reference
-                          as the selecting object is selected.
-                        type: boolean
-                      matchLabels:
-                        additionalProperties:
-                          type: string
-                        description: MatchLabels ensures an object with matching labels
-                          is selected.
-                        type: object
-                      policy:
-                        description: Policies for selection.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    type: object
-                  name:
+                  url:
                     description: |-
-                      (String) The name of the Token to create. Changing this forces a new resource to be created.
-                      The name of the Token to create. Changing this forces a new resource to be created.
-                    type: string
-                  projectKey:
-                    description: |-
-                      (String) The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
-                      The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
-                    type: string
-                  type:
-                    description: |-
-                      (String) The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
-                      The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
+                      (String) Azure API URL
+                      Azure API URL
                     type: string
                 type: object
               initProvider:
@@ -186,105 +117,37 @@ spec:
                   for example because of an external controller is managing them, like an
                   autoscaler.
                 properties:
-                  expirationDate:
+                  key:
                     description: |-
-                      MM-DD). If not set, default to no expiration.
-                      The expiration date of the token being generated, in ISO 8601 format (YYYY-MM-DD). If not set, default to no expiration.
+                      (String) Unique key of the Azure Devops instance setting
+                      Unique key of the Azure Devops instance setting
                     type: string
-                  loginName:
+                  personalAccessTokenSecretRef:
                     description: |-
-                      (String) The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
-                      The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
-                    type: string
-                  loginNameRef:
-                    description: Reference to a User in user to populate loginName.
+                      (String, Sensitive) Azure Devops personal access token
+                      Azure Devops personal access token
                     properties:
-                      name:
-                        description: Name of the referenced object.
+                      key:
+                        description: The key to select.
                         type: string
-                      policy:
-                        description: Policies for referencing.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
                     required:
+                    - key
                     - name
+                    - namespace
                     type: object
-                  loginNameSelector:
-                    description: Selector for a User in user to populate loginName.
-                    properties:
-                      matchControllerRef:
-                        description: |-
-                          MatchControllerRef ensures an object with the same controller reference
-                          as the selecting object is selected.
-                        type: boolean
-                      matchLabels:
-                        additionalProperties:
-                          type: string
-                        description: MatchLabels ensures an object with matching labels
-                          is selected.
-                        type: object
-                      policy:
-                        description: Policies for selection.
-                        properties:
-                          resolution:
-                            default: Required
-                            description: |-
-                              Resolution specifies whether resolution of this reference is required.
-                              The default is 'Required', which means the reconcile will fail if the
-                              reference cannot be resolved. 'Optional' means this reference will be
-                              a no-op if it cannot be resolved.
-                            enum:
-                            - Required
-                            - Optional
-                            type: string
-                          resolve:
-                            description: |-
-                              Resolve specifies when this reference should be resolved. The default
-                              is 'IfNotPresent', which will attempt to resolve the reference only when
-                              the corresponding field is not present. Use 'Always' to resolve the
-                              reference on every reconcile.
-                            enum:
-                            - Always
-                            - IfNotPresent
-                            type: string
-                        type: object
-                    type: object
-                  name:
+                  url:
                     description: |-
-                      (String) The name of the Token to create. Changing this forces a new resource to be created.
-                      The name of the Token to create. Changing this forces a new resource to be created.
+                      (String) Azure API URL
+                      Azure API URL
                     type: string
-                  projectKey:
-                    description: |-
-                      (String) The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
-                      The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
-                    type: string
-                  type:
-                    description: |-
-                      (String) The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
-                      The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
-                    type: string
+                required:
+                - personalAccessTokenSecretRef
                 type: object
               managementPolicies:
                 default:
@@ -454,42 +317,35 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: spec.forProvider.name is a required parameter
+            - message: spec.forProvider.key is a required parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
-                || (has(self.initProvider) && has(self.initProvider.name))'
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.key)
+                || (has(self.initProvider) && has(self.initProvider.key))'
+            - message: spec.forProvider.personalAccessTokenSecretRef is a required
+                parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.personalAccessTokenSecretRef)'
+            - message: spec.forProvider.url is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.url)
+                || (has(self.initProvider) && has(self.initProvider.url))'
           status:
-            description: UserTokenStatus defines the observed state of UserToken.
+            description: AzureStatus defines the observed state of Azure.
             properties:
               atProvider:
                 properties:
-                  expirationDate:
-                    description: |-
-                      MM-DD). If not set, default to no expiration.
-                      The expiration date of the token being generated, in ISO 8601 format (YYYY-MM-DD). If not set, default to no expiration.
-                    type: string
                   id:
                     description: (String) The ID of this resource.
                     type: string
-                  loginName:
+                  key:
                     description: |-
-                      (String) The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
-                      The login name of the User for which the token should be created. If not set, the token is created for the authenticated user. Changing this forces a new resource to be created.
+                      (String) Unique key of the Azure Devops instance setting
+                      Unique key of the Azure Devops instance setting
                     type: string
-                  name:
+                  url:
                     description: |-
-                      (String) The name of the Token to create. Changing this forces a new resource to be created.
-                      The name of the Token to create. Changing this forces a new resource to be created.
-                    type: string
-                  projectKey:
-                    description: |-
-                      (String) The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
-                      The key of the only project that can be analyzed by the PROJECT_ANALYSIS TOKEN being created. Changing this forces a new resource to be created.
-                    type: string
-                  type:
-                    description: |-
-                      (String) The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
-                      The kind of Token to create. Changing this forces a new resource to be created. Possible values are USER_TOKEN, GLOBAL_ANALYSIS_TOKEN, or PROJECT_ANALYSIS_TOKEN. Defaults to USER_TOKEN. If set to PROJECT_ANALYSIS_TOKEN, then the project_key must also be specified.
+                      (String) Azure API URL
+                      Azure API URL
                     type: string
                 type: object
               conditions:

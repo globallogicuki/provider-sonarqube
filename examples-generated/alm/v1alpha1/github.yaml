@@ -1,0 +1,17 @@
+apiVersion: alm.sonarqube.crossplane.io/v1alpha1
+kind: GitHub
+metadata:
+  annotations:
+    meta.upbound.io/example-id: alm/v1alpha1/github
+  labels:
+    testing.upbound.io/example-name: github-alm
+  name: github-alm
+spec:
+  forProvider:
+    appId: "12345"
+    clientId: "56789"
+    clientSecret: secret
+    key: myalm
+    privateKey: myprivate_key
+    url: https://api.github.com
+    webhookSecret: mysecret

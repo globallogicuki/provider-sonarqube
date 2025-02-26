@@ -1,0 +1,16 @@
+apiVersion: alm.sonarqube.crossplane.io/v1alpha1
+kind: Azure
+metadata:
+  annotations:
+    meta.upbound.io/example-id: alm/v1alpha1/azure
+  labels:
+    testing.upbound.io/example-name: az1
+  name: az1
+spec:
+  forProvider:
+    key: az1
+    personalAccessTokenSecretRef:
+      key: example-key
+      name: example-secret
+      namespace: upbound-system
+    url: https://dev.azure.com/my-org

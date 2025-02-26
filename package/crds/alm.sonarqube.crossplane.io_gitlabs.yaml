@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: projects.project.crossplane.io
+  name: gitlabs.alm.sonarqube.crossplane.io
 spec:
-  group: project.crossplane.io
+  group: alm.sonarqube.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - sonarqube
-    kind: Project
-    listKind: ProjectList
-    plural: projects
-    singular: project
+    kind: GitLab
+    listKind: GitLabList
+    plural: gitlabs
+    singular: gitlab
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,8 +34,9 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Project is the Schema for the Projects API. Provides a Sonarqube
-          Project resource. This can be used to create and manage Sonarqube Project.
+        description: GitLab is the Schema for the GitLabs API. Provides a Sonarqube
+          GitLab Alm/Devops Platform Integration resource. This can be used to create
+          and manage a Alm/Devops Platform Integration for GitLab.
         properties:
           apiVersion:
             description: |-
@@ -55,7 +56,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ProjectSpec defines the desired state of Project
+            description: GitLabSpec defines the desired state of GitLab
             properties:
               deletionPolicy:
                 default: Delete
@@ -73,61 +74,34 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  name:
+                  key:
                     description: |-
-                      (String) The name of the Project to create
-                      The name of the Project to create
+                      (String) Unique key of the GitLab instance setting. Maximum length: 200
+                      Unique key of the GitLab instance setting. Maximum length: 200
                     type: string
-                  project:
+                  personalAccessTokenSecretRef:
                     description: |-
-                      (String) Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
-                      Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
-                    type: string
-                  setting:
+                      (String, Sensitive) GitLab App personal access token with the read_api scope. See this doc for more information. Maximum length: 2000
+                      GitLab App personal access token with the `read_api` scope. See [this doc](https://docs.sonarqube.org/latest/devops-platform-integration/gitlab-integration/#importing-your-gitlab-projects-into-sonarqube) for more information. Maximum length: 2000
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  url:
                     description: |-
-                      (Block List) A list of settings associated to the project (see below for nested schema)
-                      A list of settings associated to the project
-                    items:
-                      properties:
-                        fieldValues:
-                          description: |-
-                            (List of Map of String) Setting field values for the supplied key
-                            Setting field values for the supplied key
-                          items:
-                            additionalProperties:
-                              type: string
-                            type: object
-                          type: array
-                        key:
-                          description: |-
-                            (String) Setting key
-                            Setting key
-                          type: string
-                        value:
-                          description: |-
-                            (String) Setting a value for the supplied key
-                            Setting a value for the supplied key
-                          type: string
-                        values:
-                          description: |-
-                            (List of String) Setting multi values for the supplied key
-                            Setting multi values for the supplied key
-                          items:
-                            type: string
-                          type: array
-                      type: object
-                    type: array
-                  tags:
-                    description: |-
-                      (List of String) A list of tags to put on the project.
-                      A list of tags to put on the project.
-                    items:
-                      type: string
-                    type: array
-                  visibility:
-                    description: |-
-                      (String) Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are public and private.
-                      Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are `public` and `private`.
+                      (String) GitLab API URL. Maximum length: 2000
+                      GitLab API URL. Maximum length: 2000
                     type: string
                 type: object
               initProvider:
@@ -143,62 +117,37 @@ spec:
                   for example because of an external controller is managing them, like an
                   autoscaler.
                 properties:
-                  name:
+                  key:
                     description: |-
-                      (String) The name of the Project to create
-                      The name of the Project to create
+                      (String) Unique key of the GitLab instance setting. Maximum length: 200
+                      Unique key of the GitLab instance setting. Maximum length: 200
                     type: string
-                  project:
+                  personalAccessTokenSecretRef:
                     description: |-
-                      (String) Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
-                      Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
+                      (String, Sensitive) GitLab App personal access token with the read_api scope. See this doc for more information. Maximum length: 2000
+                      GitLab App personal access token with the `read_api` scope. See [this doc](https://docs.sonarqube.org/latest/devops-platform-integration/gitlab-integration/#importing-your-gitlab-projects-into-sonarqube) for more information. Maximum length: 2000
+                    properties:
+                      key:
+                        description: The key to select.
+                        type: string
+                      name:
+                        description: Name of the secret.
+                        type: string
+                      namespace:
+                        description: Namespace of the secret.
+                        type: string
+                    required:
+                    - key
+                    - name
+                    - namespace
+                    type: object
+                  url:
+                    description: |-
+                      (String) GitLab API URL. Maximum length: 2000
+                      GitLab API URL. Maximum length: 2000
                     type: string
-                  setting:
-                    description: |-
-                      (Block List) A list of settings associated to the project (see below for nested schema)
-                      A list of settings associated to the project
-                    items:
-                      properties:
-                        fieldValues:
-                          description: |-
-                            (List of Map of String) Setting field values for the supplied key
-                            Setting field values for the supplied key
-                          items:
-                            additionalProperties:
-                              type: string
-                            type: object
-                          type: array
-                        key:
-                          description: |-
-                            (String) Setting key
-                            Setting key
-                          type: string
-                        value:
-                          description: |-
-                            (String) Setting a value for the supplied key
-                            Setting a value for the supplied key
-                          type: string
-                        values:
-                          description: |-
-                            (List of String) Setting multi values for the supplied key
-                            Setting multi values for the supplied key
-                          items:
-                            type: string
-                          type: array
-                      type: object
-                    type: array
-                  tags:
-                    description: |-
-                      (List of String) A list of tags to put on the project.
-                      A list of tags to put on the project.
-                    items:
-                      type: string
-                    type: array
-                  visibility:
-                    description: |-
-                      (String) Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are public and private.
-                      Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are `public` and `private`.
-                    type: string
+                required:
+                - personalAccessTokenSecretRef
                 type: object
               managementPolicies:
                 default:
@@ -368,77 +317,35 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: spec.forProvider.name is a required parameter
+            - message: spec.forProvider.key is a required parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
-                || (has(self.initProvider) && has(self.initProvider.name))'
-            - message: spec.forProvider.project is a required parameter
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.key)
+                || (has(self.initProvider) && has(self.initProvider.key))'
+            - message: spec.forProvider.personalAccessTokenSecretRef is a required
+                parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.project)
-                || (has(self.initProvider) && has(self.initProvider.project))'
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.personalAccessTokenSecretRef)'
+            - message: spec.forProvider.url is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.url)
+                || (has(self.initProvider) && has(self.initProvider.url))'
           status:
-            description: ProjectStatus defines the observed state of Project.
+            description: GitLabStatus defines the observed state of GitLab.
             properties:
               atProvider:
                 properties:
                   id:
                     description: (String) The ID of this resource.
                     type: string
-                  name:
+                  key:
                     description: |-
-                      (String) The name of the Project to create
-                      The name of the Project to create
+                      (String) Unique key of the GitLab instance setting. Maximum length: 200
+                      Unique key of the GitLab instance setting. Maximum length: 200
                     type: string
-                  project:
+                  url:
                     description: |-
-                      (String) Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
-                      Key of the project. Maximum length 400. All letters, digits, dash, underscore, period or colon.
-                    type: string
-                  setting:
-                    description: |-
-                      (Block List) A list of settings associated to the project (see below for nested schema)
-                      A list of settings associated to the project
-                    items:
-                      properties:
-                        fieldValues:
-                          description: |-
-                            (List of Map of String) Setting field values for the supplied key
-                            Setting field values for the supplied key
-                          items:
-                            additionalProperties:
-                              type: string
-                            type: object
-                          type: array
-                        key:
-                          description: |-
-                            (String) Setting key
-                            Setting key
-                          type: string
-                        value:
-                          description: |-
-                            (String) Setting a value for the supplied key
-                            Setting a value for the supplied key
-                          type: string
-                        values:
-                          description: |-
-                            (List of String) Setting multi values for the supplied key
-                            Setting multi values for the supplied key
-                          items:
-                            type: string
-                          type: array
-                      type: object
-                    type: array
-                  tags:
-                    description: |-
-                      (List of String) A list of tags to put on the project.
-                      A list of tags to put on the project.
-                    items:
-                      type: string
-                    type: array
-                  visibility:
-                    description: |-
-                      (String) Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are public and private.
-                      Whether the created project should be visible to everyone, or only specific user/groups. If no visibility is specified, the default project visibility of the organization will be used. Valid values are `public` and `private`.
+                      (String) GitLab API URL. Maximum length: 2000
+                      GitLab API URL. Maximum length: 2000
                     type: string
                 type: object
               conditions:

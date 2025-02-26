@@ -1,0 +1,16 @@
+apiVersion: alm.sonarqube.crossplane.io/v1alpha1
+kind: GitLab
+metadata:
+  annotations:
+    meta.upbound.io/example-id: alm/v1alpha1/gitlab
+  labels:
+    testing.upbound.io/example-name: gitlab-alm
+  name: gitlab-alm
+spec:
+  forProvider:
+    key: myalm
+    personalAccessTokenSecretRef:
+      key: example-key
+      name: example-secret
+      namespace: upbound-system
+    url: https://gitlab.com/api/v4

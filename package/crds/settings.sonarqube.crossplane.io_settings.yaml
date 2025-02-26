@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: users.user.crossplane.io
+  name: settings.settings.sonarqube.crossplane.io
 spec:
-  group: user.crossplane.io
+  group: settings.sonarqube.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - sonarqube
-    kind: User
-    listKind: UserList
-    plural: users
-    singular: user
+    kind: Setting
+    listKind: SettingList
+    plural: settings
+    singular: setting
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,8 +34,8 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: User is the Schema for the Users API. Provides a Sonarqube User
-          resource. This can be used to manage Sonarqube Users.
+        description: Setting is the Schema for the Settings API. Provides a Sonarqube
+          Settings resource. This can be used to manage Sonarqube settings.
         properties:
           apiVersion:
             description: |-
@@ -55,7 +55,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: UserSpec defines the desired state of User
+            description: SettingSpec defines the desired state of Setting
             properties:
               deletionPolicy:
                 default: Delete
@@ -73,45 +73,32 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  email:
+                  fieldValues:
                     description: |-
-                      (String) The email of the User to create.
-                      The email of the User to create.
-                    type: string
-                  isLocal:
-                    description: |-
-                      (Boolean) True if the User should be of type local. Defaults to true.
-                      `True` if the User should be of type `local`. Defaults to `true`.
-                    type: boolean
-                  loginName:
-                    description: |-
-                      (String) The login name of the User to create. Changing this forces a new resource to be created.
-                      The login name of the User to create. Changing this forces a new resource to be created.
-                    type: string
-                  name:
-                    description: |-
-                      (String) The name of the User to create. Changing this forces a new resource to be created.
-                      The name of the User to create. Changing this forces a new resource to be created.
-                    type: string
-                  passwordSecretRef:
-                    description: |-
-                      (String, Sensitive) The password of User to create. This is only used if the user is of type local.
-                      The password of User to create. This is only used if the user is of type `local`.
-                    properties:
-                      key:
-                        description: The key to select.
+                      (List of Map of String) Setting field values for the supplied key
+                      Setting field values for the supplied key
+                    items:
+                      additionalProperties:
                         type: string
-                      name:
-                        description: Name of the secret.
-                        type: string
-                      namespace:
-                        description: Namespace of the secret.
-                        type: string
-                    required:
-                    - key
-                    - name
-                    - namespace
-                    type: object
+                      type: object
+                    type: array
+                  key:
+                    description: |-
+                      (String) Setting key
+                      Setting key
+                    type: string
+                  value:
+                    description: |-
+                      (String) Setting value. To reset a value, please use the reset web service.
+                      Setting value. To reset a value, please use the reset web service.
+                    type: string
+                  values:
+                    description: |-
+                      (List of String) Setting multi values for the supplied key
+                      Setting multi values for the supplied key
+                    items:
+                      type: string
+                    type: array
                 type: object
               initProvider:
                 description: |-
@@ -126,45 +113,32 @@ spec:
                   for example because of an external controller is managing them, like an
                   autoscaler.
                 properties:
-                  email:
+                  fieldValues:
                     description: |-
-                      (String) The email of the User to create.
-                      The email of the User to create.
-                    type: string
-                  isLocal:
-                    description: |-
-                      (Boolean) True if the User should be of type local. Defaults to true.
-                      `True` if the User should be of type `local`. Defaults to `true`.
-                    type: boolean
-                  loginName:
-                    description: |-
-                      (String) The login name of the User to create. Changing this forces a new resource to be created.
-                      The login name of the User to create. Changing this forces a new resource to be created.
-                    type: string
-                  name:
-                    description: |-
-                      (String) The name of the User to create. Changing this forces a new resource to be created.
-                      The name of the User to create. Changing this forces a new resource to be created.
-                    type: string
-                  passwordSecretRef:
-                    description: |-
-                      (String, Sensitive) The password of User to create. This is only used if the user is of type local.
-                      The password of User to create. This is only used if the user is of type `local`.
-                    properties:
-                      key:
-                        description: The key to select.
+                      (List of Map of String) Setting field values for the supplied key
+                      Setting field values for the supplied key
+                    items:
+                      additionalProperties:
                         type: string
-                      name:
-                        description: Name of the secret.
-                        type: string
-                      namespace:
-                        description: Namespace of the secret.
-                        type: string
-                    required:
-                    - key
-                    - name
-                    - namespace
-                    type: object
+                      type: object
+                    type: array
+                  key:
+                    description: |-
+                      (String) Setting key
+                      Setting key
+                    type: string
+                  value:
+                    description: |-
+                      (String) Setting value. To reset a value, please use the reset web service.
+                      Setting value. To reset a value, please use the reset web service.
+                    type: string
+                  values:
+                    description: |-
+                      (List of String) Setting multi values for the supplied key
+                      Setting multi values for the supplied key
+                    items:
+                      type: string
+                    type: array
                 type: object
               managementPolicies:
                 default:
@@ -334,42 +308,44 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: spec.forProvider.loginName is a required parameter
+            - message: spec.forProvider.key is a required parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.loginName)
-                || (has(self.initProvider) && has(self.initProvider.loginName))'
-            - message: spec.forProvider.name is a required parameter
-              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
-                || (has(self.initProvider) && has(self.initProvider.name))'
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.key)
+                || (has(self.initProvider) && has(self.initProvider.key))'
           status:
-            description: UserStatus defines the observed state of User.
+            description: SettingStatus defines the observed state of Setting.
             properties:
               atProvider:
                 properties:
-                  email:
+                  fieldValues:
                     description: |-
-                      (String) The email of the User to create.
-                      The email of the User to create.
-                    type: string
+                      (List of Map of String) Setting field values for the supplied key
+                      Setting field values for the supplied key
+                    items:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    type: array
                   id:
                     description: (String) The ID of this resource.
                     type: string
-                  isLocal:
+                  key:
                     description: |-
-                      (Boolean) True if the User should be of type local. Defaults to true.
-                      `True` if the User should be of type `local`. Defaults to `true`.
-                    type: boolean
-                  loginName:
-                    description: |-
-                      (String) The login name of the User to create. Changing this forces a new resource to be created.
-                      The login name of the User to create. Changing this forces a new resource to be created.
+                      (String) Setting key
+                      Setting key
                     type: string
-                  name:
+                  value:
                     description: |-
-                      (String) The name of the User to create. Changing this forces a new resource to be created.
-                      The name of the User to create. Changing this forces a new resource to be created.
+                      (String) Setting value. To reset a value, please use the reset web service.
+                      Setting value. To reset a value, please use the reset web service.
                     type: string
+                  values:
+                    description: |-
+                      (List of String) Setting multi values for the supplied key
+                      Setting multi values for the supplied key
+                    items:
+                      type: string
+                    type: array
                 type: object
               conditions:
                 description: Conditions of the resource.

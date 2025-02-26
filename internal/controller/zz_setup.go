@@ -9,6 +9,9 @@ import (
 
 	"github.com/crossplane/upjet/pkg/controller"
 
+	azure "github.com/globallogicuki/provider-sonarqube/internal/controller/alm/azure"
+	github "github.com/globallogicuki/provider-sonarqube/internal/controller/alm/github"
+	gitlab "github.com/globallogicuki/provider-sonarqube/internal/controller/alm/gitlab"
 	project "github.com/globallogicuki/provider-sonarqube/internal/controller/project/project"
 	providerconfig "github.com/globallogicuki/provider-sonarqube/internal/controller/providerconfig"
 	rule "github.com/globallogicuki/provider-sonarqube/internal/controller/rule/rule"
@@ -21,6 +24,9 @@ import (
 // the supplied manager.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
+		azure.Setup,
+		github.Setup,
+		gitlab.Setup,
 		project.Setup,
 		providerconfig.Setup,
 		rule.Setup,

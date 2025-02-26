@@ -9,6 +9,9 @@ import (
 	_ "embed"
 
 	ujconfig "github.com/crossplane/upjet/pkg/config"
+	"github.com/globallogicuki/provider-sonarqube/config/almazure"
+	"github.com/globallogicuki/provider-sonarqube/config/almgithub"
+	"github.com/globallogicuki/provider-sonarqube/config/almgitlab"
 	"github.com/globallogicuki/provider-sonarqube/config/project"
 	"github.com/globallogicuki/provider-sonarqube/config/rule"
 	"github.com/globallogicuki/provider-sonarqube/config/setting"
@@ -30,7 +33,7 @@ var providerMetadata string
 // GetProvider returns provider configuration
 func GetProvider() *ujconfig.Provider {
 	pc := ujconfig.NewProvider([]byte(providerSchema), resourcePrefix, modulePath, []byte(providerMetadata),
-		ujconfig.WithRootGroup("crossplane.io"),
+		ujconfig.WithRootGroup("sonarqube.crossplane.io"),
 		ujconfig.WithIncludeList(ExternalNameConfigured()),
 		ujconfig.WithFeaturesPackage("internal/features"),
 		ujconfig.WithDefaultResourceOptions(
@@ -44,6 +47,9 @@ func GetProvider() *ujconfig.Provider {
 		usertoken.Configure,
 		rule.Configure,
 		setting.Configure,
+		almazure.Configure,
+		almgithub.Configure,
+		almgitlab.Configure,
 	} {
 		configure(pc)
 	}

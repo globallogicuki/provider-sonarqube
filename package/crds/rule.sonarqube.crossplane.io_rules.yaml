@@ -4,18 +4,18 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: settings.settings.crossplane.io
+  name: rules.rule.sonarqube.crossplane.io
 spec:
-  group: settings.crossplane.io
+  group: rule.sonarqube.crossplane.io
   names:
     categories:
     - crossplane
     - managed
     - sonarqube
-    kind: Setting
-    listKind: SettingList
-    plural: settings
-    singular: setting
+    kind: Rule
+    listKind: RuleList
+    plural: rules
+    singular: rule
   scope: Cluster
   versions:
   - additionalPrinterColumns:
@@ -34,8 +34,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Setting is the Schema for the Settings API. Provides a Sonarqube
-          Settings resource. This can be used to manage Sonarqube settings.
+        description: Rule is the Schema for the Rules API. <no value>
         properties:
           apiVersion:
             description: |-
@@ -55,7 +54,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: SettingSpec defines the desired state of Setting
+            description: RuleSpec defines the desired state of Rule
             properties:
               deletionPolicy:
                 default: Delete
@@ -73,32 +72,47 @@ spec:
                 type: string
               forProvider:
                 properties:
-                  fieldValues:
-                    description: |-
-                      (List of Map of String) Setting field values for the supplied key
-                      Setting field values for the supplied key
-                    items:
-                      additionalProperties:
-                        type: string
-                      type: object
-                    type: array
-                  key:
-                    description: |-
-                      (String) Setting key
-                      Setting key
+                  customKey:
+                    description: 'key of the custom rule should only contain : a-z,
+                      0-9, \_'
                     type: string
-                  value:
-                    description: |-
-                      (String) Setting value. To reset a value, please use the reset web service.
-                      Setting value. To reset a value, please use the reset web service.
+                  markdownDescription:
+                    description: Rule description
                     type: string
-                  values:
+                  name:
+                    description: Rule name
+                    type: string
+                  params:
                     description: |-
-                      (List of String) Setting multi values for the supplied key
-                      Setting multi values for the supplied key
-                    items:
-                      type: string
-                    type: array
+                      Parameters as semi-colon list of =, for example 'params=key1=v1;key2=v2' (Only for custom rule)
+                      - parameter order: expression=value;filePattern=value;message=value
+                    type: string
+                  preventReactivation:
+                    description: |-
+                      If set to true and if the rule has been deactivated (status 'REMOVED'), a status 409 will be returned
+                      - Possible values - true, false, yes, no
+                    type: string
+                  severity:
+                    description: |-
+                      Rule severity
+                      - Possible values - INFO, MINOR, MAJOR, CRITICAL, BLOCKER
+                    type: string
+                  status:
+                    description: |-
+                      Rule status
+                      - Possible values - BETA, DEPRECATED, READY, REMOVED
+                      - Default value - READY
+                    type: string
+                  templateKey:
+                    description: |-
+                      Key of the template rule in order to create a custom rule (mandatory for custom rule)
+                      - [Example values](https://docs.sonarqube.org/latest/user-guide/rules/#header-4)
+                    type: string
+                  type:
+                    description: |-
+                      Rule type
+                      - Possible values - CODE_SMELL, BUG, VULNERABILITY, SECURITY_HOTSPOT
+                    type: string
                 type: object
               initProvider:
                 description: |-
@@ -113,32 +127,47 @@ spec:
                   for example because of an external controller is managing them, like an
                   autoscaler.
                 properties:
-                  fieldValues:
-                    description: |-
-                      (List of Map of String) Setting field values for the supplied key
-                      Setting field values for the supplied key
-                    items:
-                      additionalProperties:
-                        type: string
-                      type: object
-                    type: array
-                  key:
-                    description: |-
-                      (String) Setting key
-                      Setting key
+                  customKey:
+                    description: 'key of the custom rule should only contain : a-z,
+                      0-9, \_'
                     type: string
-                  value:
-                    description: |-
-                      (String) Setting value. To reset a value, please use the reset web service.
-                      Setting value. To reset a value, please use the reset web service.
+                  markdownDescription:
+                    description: Rule description
                     type: string
-                  values:
+                  name:
+                    description: Rule name
+                    type: string
+                  params:
                     description: |-
-                      (List of String) Setting multi values for the supplied key
-                      Setting multi values for the supplied key
-                    items:
-                      type: string
-                    type: array
+                      Parameters as semi-colon list of =, for example 'params=key1=v1;key2=v2' (Only for custom rule)
+                      - parameter order: expression=value;filePattern=value;message=value
+                    type: string
+                  preventReactivation:
+                    description: |-
+                      If set to true and if the rule has been deactivated (status 'REMOVED'), a status 409 will be returned
+                      - Possible values - true, false, yes, no
+                    type: string
+                  severity:
+                    description: |-
+                      Rule severity
+                      - Possible values - INFO, MINOR, MAJOR, CRITICAL, BLOCKER
+                    type: string
+                  status:
+                    description: |-
+                      Rule status
+                      - Possible values - BETA, DEPRECATED, READY, REMOVED
+                      - Default value - READY
+                    type: string
+                  templateKey:
+                    description: |-
+                      Key of the template rule in order to create a custom rule (mandatory for custom rule)
+                      - [Example values](https://docs.sonarqube.org/latest/user-guide/rules/#header-4)
+                    type: string
+                  type:
+                    description: |-
+                      Rule type
+                      - Possible values - CODE_SMELL, BUG, VULNERABILITY, SECURITY_HOTSPOT
+                    type: string
                 type: object
               managementPolicies:
                 default:
@@ -308,44 +337,70 @@ spec:
             - forProvider
             type: object
             x-kubernetes-validations:
-            - message: spec.forProvider.key is a required parameter
+            - message: spec.forProvider.customKey is a required parameter
               rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
-                || ''Update'' in self.managementPolicies) || has(self.forProvider.key)
-                || (has(self.initProvider) && has(self.initProvider.key))'
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.customKey)
+                || (has(self.initProvider) && has(self.initProvider.customKey))'
+            - message: spec.forProvider.markdownDescription is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.markdownDescription)
+                || (has(self.initProvider) && has(self.initProvider.markdownDescription))'
+            - message: spec.forProvider.name is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.name)
+                || (has(self.initProvider) && has(self.initProvider.name))'
+            - message: spec.forProvider.templateKey is a required parameter
+              rule: '!(''*'' in self.managementPolicies || ''Create'' in self.managementPolicies
+                || ''Update'' in self.managementPolicies) || has(self.forProvider.templateKey)
+                || (has(self.initProvider) && has(self.initProvider.templateKey))'
           status:
-            description: SettingStatus defines the observed state of Setting.
+            description: RuleStatus defines the observed state of Rule.
             properties:
               atProvider:
                 properties:
-                  fieldValues:
-                    description: |-
-                      (List of Map of String) Setting field values for the supplied key
-                      Setting field values for the supplied key
-                    items:
-                      additionalProperties:
-                        type: string
-                      type: object
-                    type: array
+                  customKey:
+                    description: 'key of the custom rule should only contain : a-z,
+                      0-9, \_'
+                    type: string
                   id:
-                    description: (String) The ID of this resource.
                     type: string
-                  key:
-                    description: |-
-                      (String) Setting key
-                      Setting key
+                  markdownDescription:
+                    description: Rule description
                     type: string
-                  value:
-                    description: |-
-                      (String) Setting value. To reset a value, please use the reset web service.
-                      Setting value. To reset a value, please use the reset web service.
+                  name:
+                    description: Rule name
                     type: string
-                  values:
+                  params:
                     description: |-
-                      (List of String) Setting multi values for the supplied key
-                      Setting multi values for the supplied key
-                    items:
-                      type: string
-                    type: array
+                      Parameters as semi-colon list of =, for example 'params=key1=v1;key2=v2' (Only for custom rule)
+                      - parameter order: expression=value;filePattern=value;message=value
+                    type: string
+                  preventReactivation:
+                    description: |-
+                      If set to true and if the rule has been deactivated (status 'REMOVED'), a status 409 will be returned
+                      - Possible values - true, false, yes, no
+                    type: string
+                  severity:
+                    description: |-
+                      Rule severity
+                      - Possible values - INFO, MINOR, MAJOR, CRITICAL, BLOCKER
+                    type: string
+                  status:
+                    description: |-
+                      Rule status
+                      - Possible values - BETA, DEPRECATED, READY, REMOVED
+                      - Default value - READY
+                    type: string
+                  templateKey:
+                    description: |-
+                      Key of the template rule in order to create a custom rule (mandatory for custom rule)
+                      - [Example values](https://docs.sonarqube.org/latest/user-guide/rules/#header-4)
+                    type: string
+                  type:
+                    description: |-
+                      Rule type
+                      - Possible values - CODE_SMELL, BUG, VULNERABILITY, SECURITY_HOTSPOT
+                    type: string
                 type: object
               conditions:
                 description: Conditions of the resource.
