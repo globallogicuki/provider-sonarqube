@@ -1,0 +1,14 @@
+apiVersion: settings.crossplane.io/v1alpha1
+kind: Setting
+metadata:
+  annotations:
+    meta.upbound.io/example-id: settings/v1alpha1/setting
+  labels:
+    testing.upbound.io/example-name: multi_value_setting
+  name: multi-value-setting
+spec:
+  forProvider:
+    key: sonar.global.exclusions
+    values:
+    - foo
+    - bar/**/*.*

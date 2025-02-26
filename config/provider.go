@@ -10,6 +10,8 @@ import (
 
 	ujconfig "github.com/crossplane/upjet/pkg/config"
 	"github.com/globallogicuki/provider-sonarqube/config/project"
+	"github.com/globallogicuki/provider-sonarqube/config/rule"
+	"github.com/globallogicuki/provider-sonarqube/config/setting"
 	"github.com/globallogicuki/provider-sonarqube/config/user"
 	"github.com/globallogicuki/provider-sonarqube/config/usertoken"
 )
@@ -40,6 +42,8 @@ func GetProvider() *ujconfig.Provider {
 		project.Configure,
 		user.Configure,
 		usertoken.Configure,
+		rule.Configure,
+		setting.Configure,
 	} {
 		configure(pc)
 	}

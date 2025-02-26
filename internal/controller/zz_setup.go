@@ -11,6 +11,8 @@ import (
 
 	project "github.com/globallogicuki/provider-sonarqube/internal/controller/project/project"
 	providerconfig "github.com/globallogicuki/provider-sonarqube/internal/controller/providerconfig"
+	rule "github.com/globallogicuki/provider-sonarqube/internal/controller/rule/rule"
+	setting "github.com/globallogicuki/provider-sonarqube/internal/controller/settings/setting"
 	user "github.com/globallogicuki/provider-sonarqube/internal/controller/user/user"
 	usertoken "github.com/globallogicuki/provider-sonarqube/internal/controller/user/usertoken"
 )
@@ -21,6 +23,8 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		project.Setup,
 		providerconfig.Setup,
+		rule.Setup,
+		setting.Setup,
 		user.Setup,
 		usertoken.Setup,
 	} {

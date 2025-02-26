@@ -12,6 +12,8 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"sonarqube_project":    config.IdentifierFromProvider,
 	"sonarqube_user":       config.IdentifierFromProvider,
 	"sonarqube_user_token": config.IdentifierFromProvider,
+	"sonarqube_rule":       config.IdentifierFromProvider,
+	"sonarqube_setting":    config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the
