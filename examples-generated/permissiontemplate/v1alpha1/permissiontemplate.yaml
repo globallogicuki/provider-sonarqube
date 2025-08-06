@@ -1,0 +1,13 @@
+apiVersion: permissiontemplate.sonarqube.crossplane.io/v1alpha1
+kind: PermissionTemplate
+metadata:
+  annotations:
+    meta.upbound.io/example-id: permissiontemplate/v1alpha1/permissiontemplate
+  labels:
+    testing.upbound.io/example-name: template
+  name: template
+spec:
+  forProvider:
+    description: These are internal projects
+    name: Internal-Projects
+    projectKeyPattern: internal.*

@@ -1,0 +1,13 @@
+apiVersion: permissions.sonarqube.crossplane.io/v1alpha1
+kind: Permissions
+metadata:
+  annotations:
+    meta.upbound.io/example-id: permissions/v1alpha1/permissions
+  labels:
+    testing.upbound.io/example-name: my_global_admins
+  name: my-global-admins
+spec:
+  forProvider:
+    groupName: my-admins
+    permissions:
+    - admin

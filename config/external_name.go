@@ -9,14 +9,16 @@ import "github.com/crossplane/upjet/pkg/config"
 // ExternalNameConfigs contains all external name configurations for this
 // provider.
 var ExternalNameConfigs = map[string]config.ExternalName{
-	"sonarqube_project":    config.IdentifierFromProvider,
-	"sonarqube_user":       config.IdentifierFromProvider,
-	"sonarqube_user_token": config.IdentifierFromProvider,
-	"sonarqube_rule":       config.IdentifierFromProvider,
-	"sonarqube_setting":    config.IdentifierFromProvider,
-	"sonarqube_alm_azure":  config.IdentifierFromProvider,
-	"sonarqube_alm_github": config.IdentifierFromProvider,
-	"sonarqube_alm_gitlab": config.IdentifierFromProvider,
+	"sonarqube_project":             config.IdentifierFromProvider,
+	"sonarqube_user":                config.IdentifierFromProvider,
+	"sonarqube_user_token":          config.IdentifierFromProvider,
+	"sonarqube_rule":                config.IdentifierFromProvider,
+	"sonarqube_setting":             config.IdentifierFromProvider,
+	"sonarqube_alm_azure":           config.IdentifierFromProvider,
+	"sonarqube_alm_github":          config.IdentifierFromProvider,
+	"sonarqube_alm_gitlab":          config.IdentifierFromProvider,
+	"sonarqube_permission_template": config.IdentifierFromProvider,
+	"sonarqube_permissions":         config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

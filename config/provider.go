@@ -12,6 +12,8 @@ import (
 	"github.com/globallogicuki/provider-sonarqube/config/almazure"
 	"github.com/globallogicuki/provider-sonarqube/config/almgithub"
 	"github.com/globallogicuki/provider-sonarqube/config/almgitlab"
+	"github.com/globallogicuki/provider-sonarqube/config/permissions"
+	"github.com/globallogicuki/provider-sonarqube/config/permissiontemplate"
 	"github.com/globallogicuki/provider-sonarqube/config/project"
 	"github.com/globallogicuki/provider-sonarqube/config/rule"
 	"github.com/globallogicuki/provider-sonarqube/config/setting"
@@ -50,6 +52,8 @@ func GetProvider() *ujconfig.Provider {
 		almazure.Configure,
 		almgithub.Configure,
 		almgitlab.Configure,
+		permissiontemplate.Configure,
+		permissions.Configure,
 	} {
 		configure(pc)
 	}
