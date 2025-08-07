@@ -11,6 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 
 	v1alpha1 "github.com/globallogicuki/provider-sonarqube/apis/alm/v1alpha1"
+	v1alpha1group "github.com/globallogicuki/provider-sonarqube/apis/group/v1alpha1"
 	v1alpha1permissions "github.com/globallogicuki/provider-sonarqube/apis/permissions/v1alpha1"
 	v1alpha1permissiontemplate "github.com/globallogicuki/provider-sonarqube/apis/permissiontemplate/v1alpha1"
 	v1alpha1project "github.com/globallogicuki/provider-sonarqube/apis/project/v1alpha1"
@@ -25,6 +26,7 @@ func init() {
 	// Register the types with the Scheme so the components can map objects to GroupVersionKinds and back
 	AddToSchemes = append(AddToSchemes,
 		v1alpha1.SchemeBuilder.AddToScheme,
+		v1alpha1group.SchemeBuilder.AddToScheme,
 		v1alpha1permissions.SchemeBuilder.AddToScheme,
 		v1alpha1permissiontemplate.SchemeBuilder.AddToScheme,
 		v1alpha1project.SchemeBuilder.AddToScheme,

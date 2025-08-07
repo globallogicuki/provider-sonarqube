@@ -1,0 +1,12 @@
+apiVersion: group.sonarqube.crossplane.io/v1alpha1
+kind: Group
+metadata:
+  annotations:
+    meta.upbound.io/example-id: group/v1alpha1/group
+  labels:
+    testing.upbound.io/example-name: project_users
+  name: project-users
+spec:
+  forProvider:
+    description: This is a group
+    name: Project-Users

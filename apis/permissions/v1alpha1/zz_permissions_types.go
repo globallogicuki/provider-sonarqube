@@ -17,7 +17,18 @@ type PermissionsInitParameters struct {
 
 	// (String) The name of the Group that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with login_name
 	// The name of the Group that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with `login_name`
+	// +crossplane:generate:reference:type=github.com/globallogicuki/provider-sonarqube/apis/group/v1alpha1.Group
+	// +crossplane:generate:reference:refFieldName=GroupNameRef
+	// +crossplane:generate:reference:selectorFieldName=GroupNameSelector
 	GroupName *string `json:"groupName,omitempty" tf:"group_name,omitempty"`
+
+	// Reference to a Group in group to populate groupName.
+	// +kubebuilder:validation:Optional
+	GroupNameRef *v1.Reference `json:"groupNameRef,omitempty" tf:"-"`
+
+	// Selector for a Group in group to populate groupName.
+	// +kubebuilder:validation:Optional
+	GroupNameSelector *v1.Selector `json:"groupNameSelector,omitempty" tf:"-"`
 
 	// (String) The name of the user that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with group_name.
 	// The name of the user that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with `group_name`.
@@ -85,8 +96,19 @@ type PermissionsParameters struct {
 
 	// (String) The name of the Group that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with login_name
 	// The name of the Group that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with `login_name`
+	// +crossplane:generate:reference:type=github.com/globallogicuki/provider-sonarqube/apis/group/v1alpha1.Group
+	// +crossplane:generate:reference:refFieldName=GroupNameRef
+	// +crossplane:generate:reference:selectorFieldName=GroupNameSelector
 	// +kubebuilder:validation:Optional
 	GroupName *string `json:"groupName,omitempty" tf:"group_name,omitempty"`
+
+	// Reference to a Group in group to populate groupName.
+	// +kubebuilder:validation:Optional
+	GroupNameRef *v1.Reference `json:"groupNameRef,omitempty" tf:"-"`
+
+	// Selector for a Group in group to populate groupName.
+	// +kubebuilder:validation:Optional
+	GroupNameSelector *v1.Selector `json:"groupNameSelector,omitempty" tf:"-"`
 
 	// (String) The name of the user that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with group_name.
 	// The name of the user that should get the specified permissions. Changing this forces a new resource to be created. Cannot be used with `group_name`.

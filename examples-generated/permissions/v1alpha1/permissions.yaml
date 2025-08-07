@@ -8,6 +8,8 @@ metadata:
   name: my-global-admins
 spec:
   forProvider:
-    groupName: my-admins
+    groupNameSelector:
+      matchLabels:
+        testing.upbound.io/example-name: example
     permissions:
     - admin

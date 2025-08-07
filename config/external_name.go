@@ -19,6 +19,7 @@ var ExternalNameConfigs = map[string]config.ExternalName{
 	"sonarqube_alm_gitlab":          config.IdentifierFromProvider,
 	"sonarqube_permission_template": config.IdentifierFromProvider,
 	"sonarqube_permissions":         config.IdentifierFromProvider,
+	"sonarqube_group":               config.IdentifierFromProvider,
 }
 
 // ExternalNameConfigurations applies all external name configs listed in the

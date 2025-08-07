@@ -48,6 +48,16 @@ func (in *PermissionsInitParameters) DeepCopyInto(out *PermissionsInitParameters
 		*out = new(string)
 		**out = **in
 	}
+	if in.GroupNameRef != nil {
+		in, out := &in.GroupNameRef, &out.GroupNameRef
+		*out = new(v1.Reference)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.GroupNameSelector != nil {
+		in, out := &in.GroupNameSelector, &out.GroupNameSelector
+		*out = new(v1.Selector)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.LoginName != nil {
 		in, out := &in.LoginName, &out.LoginName
 		*out = new(string)
@@ -196,6 +206,16 @@ func (in *PermissionsParameters) DeepCopyInto(out *PermissionsParameters) {
 		in, out := &in.GroupName, &out.GroupName
 		*out = new(string)
 		**out = **in
+	}
+	if in.GroupNameRef != nil {
+		in, out := &in.GroupNameRef, &out.GroupNameRef
+		*out = new(v1.Reference)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.GroupNameSelector != nil {
+		in, out := &in.GroupNameSelector, &out.GroupNameSelector
+		*out = new(v1.Selector)
+		(*in).DeepCopyInto(*out)
 	}
 	if in.LoginName != nil {
 		in, out := &in.LoginName, &out.LoginName

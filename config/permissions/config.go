@@ -12,5 +12,10 @@ func Configure(p *config.Provider) {
 			RefFieldName:      "TemplateIDRef",
 			SelectorFieldName: "TemplateIDSelector",
 		}
+		r.References["group_name"] = config.Reference{
+			TerraformName:     "sonarqube_group",
+			RefFieldName:      "GroupNameRef",
+			SelectorFieldName: "GroupNameSelector",
+		}
 	})
 }

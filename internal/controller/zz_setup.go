@@ -12,6 +12,7 @@ import (
 	azure "github.com/globallogicuki/provider-sonarqube/internal/controller/alm/azure"
 	github "github.com/globallogicuki/provider-sonarqube/internal/controller/alm/github"
 	gitlab "github.com/globallogicuki/provider-sonarqube/internal/controller/alm/gitlab"
+	group "github.com/globallogicuki/provider-sonarqube/internal/controller/group/group"
 	permissions "github.com/globallogicuki/provider-sonarqube/internal/controller/permissions/permissions"
 	permissiontemplate "github.com/globallogicuki/provider-sonarqube/internal/controller/permissiontemplate/permissiontemplate"
 	project "github.com/globallogicuki/provider-sonarqube/internal/controller/project/project"
@@ -29,6 +30,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 		azure.Setup,
 		github.Setup,
 		gitlab.Setup,
+		group.Setup,
 		permissions.Setup,
 		permissiontemplate.Setup,
 		project.Setup,

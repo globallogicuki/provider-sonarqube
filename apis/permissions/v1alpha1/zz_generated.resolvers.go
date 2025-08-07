@@ -9,7 +9,8 @@ package v1alpha1
 import (
 	"context"
 	reference "github.com/crossplane/crossplane-runtime/pkg/reference"
-	v1alpha1 "github.com/globallogicuki/provider-sonarqube/apis/permissiontemplate/v1alpha1"
+	v1alpha1 "github.com/globallogicuki/provider-sonarqube/apis/group/v1alpha1"
+	v1alpha11 "github.com/globallogicuki/provider-sonarqube/apis/permissiontemplate/v1alpha1"
 	errors "github.com/pkg/errors"
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -22,13 +23,29 @@ func (mg *Permissions) ResolveReferences(ctx context.Context, c client.Reader) e
 	var err error
 
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.GroupName),
+		Extract:      reference.ExternalName(),
+		Reference:    mg.Spec.ForProvider.GroupNameRef,
+		Selector:     mg.Spec.ForProvider.GroupNameSelector,
+		To: reference.To{
+			List:    &v1alpha1.GroupList{},
+			Managed: &v1alpha1.Group{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.ForProvider.GroupName")
+	}
+	mg.Spec.ForProvider.GroupName = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.ForProvider.GroupNameRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.TemplateID),
 		Extract:      reference.ExternalName(),
 		Reference:    mg.Spec.ForProvider.TemplateIDRef,
 		Selector:     mg.Spec.ForProvider.TemplateIDSelector,
 		To: reference.To{
-			List:    &v1alpha1.PermissionTemplateList{},
-			Managed: &v1alpha1.PermissionTemplate{},
+			List:    &v1alpha11.PermissionTemplateList{},
+			Managed: &v1alpha11.PermissionTemplate{},
 		},
 	})
 	if err != nil {
@@ -38,13 +55,29 @@ func (mg *Permissions) ResolveReferences(ctx context.Context, c client.Reader) e
 	mg.Spec.ForProvider.TemplateIDRef = rsp.ResolvedReference
 
 	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
+		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.GroupName),
+		Extract:      reference.ExternalName(),
+		Reference:    mg.Spec.InitProvider.GroupNameRef,
+		Selector:     mg.Spec.InitProvider.GroupNameSelector,
+		To: reference.To{
+			List:    &v1alpha1.GroupList{},
+			Managed: &v1alpha1.Group{},
+		},
+	})
+	if err != nil {
+		return errors.Wrap(err, "mg.Spec.InitProvider.GroupName")
+	}
+	mg.Spec.InitProvider.GroupName = reference.ToPtrValue(rsp.ResolvedValue)
+	mg.Spec.InitProvider.GroupNameRef = rsp.ResolvedReference
+
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.TemplateID),
 		Extract:      reference.ExternalName(),
 		Reference:    mg.Spec.InitProvider.TemplateIDRef,
 		Selector:     mg.Spec.InitProvider.TemplateIDSelector,
 		To: reference.To{
-			List:    &v1alpha1.PermissionTemplateList{},
-			Managed: &v1alpha1.PermissionTemplate{},
+			List:    &v1alpha11.PermissionTemplateList{},
+			Managed: &v1alpha11.PermissionTemplate{},
 		},
 	})
 	if err != nil {
